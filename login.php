@@ -1,101 +1,67 @@
 <?php
-  include ("inc/classes/User.php");
-  include_once ("inc/classes/session.php");
-?>
-<?php
-  $userSession = new Session();
-  if ($userSession->getSession('login') == true) {
-    header('Location: chat.php');
-  }
+ob_clean();
+session_start();
 
-  $user = new User();
-  $registration = $user->userRegistration($_POST);
-  $login = $user->userLogin($_POST);
+if (isset($_POST['sub'])) {
+	include_once "config.php";
+	$email = $_POST['email'];
+	$password = $_POST['pass'];
+	$password = md5($password);
+
+	$select = "SELECT * FROM `login` WHERE email='$email'";
+	$query = mysqli_query($conn, $select);
+	$res = mysqli_fetch_array($query);
+
+	$db_pass = $res['password'];
+	$category = $res['category'];
+	if ($password == $db_pass) {
+		$_SESSION['email'] = $email;
+		$_SESSION['category'] = $category;
+		header("Location: redirect.php");
+	} else {
+		echo "<script>
+			alert('Your ID/Password Is Incorrect')
+			</script>";
+	}
+}
 ?>
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <link href="assets/style.css" rel="stylesheet">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="assets/main.js"></script>
-    <title>Login</title>
-  </head>
-  <body>
-    <div class="container">
-        	<div class="row">
-    			<div class="col-md-6 col-md-offset-3">
-          <?php
-            if (isset($registration)) {
-              echo $registration;
-            }
-            if (isset($login)) {
-              echo $login;
-            }
-          ?>
-    				<div class="panel panel-login">
-    					<div class="panel-heading">
-    						<div class="row">
-    							<div class="col-xs-6">
-    								<a href="#" class="active" id="login-form-link">Login</a>
-    							</div>
-    							<div class="col-xs-6">
-    								<a href="#" id="register-form-link">Register</a>
-    							</div>
-    						</div>
-    						<hr>
-    					</div>
-    					<div class="panel-body">
-    						<div class="row">
-    							<div class="col-lg-12">
-    								<form id="login-form" action="" method="post" role="form" style="display: block;">
-    									<div class="form-group">
-    										<input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email" value="">
-    									</div>
-    									<div class="form-group">
-    										<input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
-    									</div>
+<html>
 
-    									<div class="form-group">
-    										<div class="row">
-    											<div class="col-sm-6 col-sm-offset-3">
-    												<input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Log In">
-    											</div>
-    										</div>
-    									</div>
+<head>
+	<title>LOGIN PAGE</title>
+	<script type="application/x-javascript">
+		addEventListener("load", function() {
+			setTimeout(hideURLbar, 0);
+		}, false);
 
-    								</form>
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<link rel="stylesheet" type="text/css" href="css/login.css" media="all">
+	<link href='//fonts.googleapis.com/css?family=Dosis:400,300,200,500,600,700,800' rel='stylesheet' type='text/css'>
+</head>
 
-    								<form id="register-form" action="" method="post" role="form" style="display: none;">
-    									<div class="form-group">
-    										<input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
-    									</div>
-    									<div class="form-group">
-    										<input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email Address" value="">
-    									</div>
-    									<div class="form-group">
-    										<input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
-    									</div>
-    									<div class="form-group">
-    										<input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
-    									</div>
-    									<div class="form-group">
-    										<div class="row">
-    											<div class="col-sm-6 col-sm-offset-3">
-    												<input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">
-    											</div>
-    										</div>
-    									</div>
-    								</form>
-    							</div>
-    						</div>
-    					</div>
-    				</div>
-    			</div>
-    		</div>
-    	</div>
+<body>
+	<div class="main">
+		<h1>Login Page</h1>
+		<div class="main-row">
+			<div class="agileits-top">
 
-  </body>
+				<form action="login.php" method="POST">
+					<!--<label id="email">Enter Email</label>-->
+					<input type="text" name="email" required class="text" placeholder="Email">
+
+					<!--<label id="pass">Enter Password</label>-->
+					<input type="password" name="pass" required class="text" placeholder="Password">
+
+
+					<input type="submit" name="sub" value="LOGIN">
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+
 </html>
